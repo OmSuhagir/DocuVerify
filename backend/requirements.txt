@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+google-generativeai
+pytesseract
+spacy
+thefuzz
+python-multipart
+pillow
+pdfplumber
+pydantic
+pydantic-settings
+python-dateutil>=2.8.2
