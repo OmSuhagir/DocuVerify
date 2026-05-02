@@ -11,3 +11,5 @@ pdfplumber
 pydantic
 pydantic-settings
 python-dateutil>=2.8.2
+gunicorn
+python-dotenv

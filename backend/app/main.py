@@ -8,9 +8,16 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="DocuVerify API", version="1.0.0")
 
+# Configure allowed origins from environment. Use comma-separated list or "*" for all.
+allowed_origins = os.getenv("FASTAPI_ALLOWED_ORIGINS", "http://localhost:5173")
+if allowed_origins.strip() == "*":
+    origins = ["*"]
+else:
+    origins = [o.strip() for o in allowed_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Your frontend URL
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,5 +41,5 @@ def get_categories():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("FASTAPI_PORT", 8000))
-    uvicorn.run(app, host="::", port=port)
+    port = int(os.getenv("PORT", os.getenv("FASTAPI_PORT", 8000)))
+    uvicorn.run(app, host="0.0.0.0", port=port)
