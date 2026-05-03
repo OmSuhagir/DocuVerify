@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function ProcessingView() {
   const { sessionId } = useParams();
@@ -17,6 +17,7 @@ export default function ProcessingView() {
 
     const processDocuments = async () => {
       try {
+        console.log("Sending post request to ", `${API_BASE_URL}/verify/${sessionId}`)
         await axios.post(`${API_BASE_URL}/verify/${sessionId}`);
         navigate(`/results/${sessionId}`);
       } catch (err) {
