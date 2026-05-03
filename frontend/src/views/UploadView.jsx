@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { UploadCloud, File, X, AlertCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
 export default function UploadView() {
   const [categories, setCategories] = useState({
@@ -32,6 +32,7 @@ export default function UploadView() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        console.log("Sending request to : ", `${API_BASE_URL}/categories`)
         const response = await axios.get(`${API_BASE_URL}/categories`);
         setCategories(response.data);
       } catch (err) {
