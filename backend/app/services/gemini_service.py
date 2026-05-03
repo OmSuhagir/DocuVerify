@@ -75,24 +75,44 @@ def extract_with_gemini(file_path: str, category: str = None) -> Dict[str, Any]:
         try:
             if using_client_api:
                 # Newer `google.genai.Client` style
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=[
-                        types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
-                        prompt,
-                    ],
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                    ),
-                )
+                if types and hasattr(types, "Part") and hasattr(getattr(types, "Part"), "from_bytes"):
+                    # preferred: send binary part directly
+                    response = client.models.generate_content(
+                        model=model_name,
+                        contents=[
+                            types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
+                            prompt,
+                        ],
+                        config=types.GenerateContentConfig(
+                            response_mime_type="application/json",
+                        ),
+                    )
+                elif hasattr(client, "upload_file"):
+                    # fallback: upload file then reference it in generation
+                    upload_res = client.upload_file(abs_path)
+                    response = client.models.generate_content(
+                        model=model_name,
+                        contents=[upload_res, prompt],
+                        config=types.GenerateContentConfig(response_mime_type="application/json"),
+                    )
+                else:
+                    raise RuntimeError("No supported file-part API available on genai client")
             else:
                 # Older `google.generativeai` style
                 model = genai.GenerativeModel(model_name)
                 gen_config = types.GenerationConfig(response_mime_type="application/json")
-                response = model.generate_content(
-                    [types.Part.from_bytes(data=file_bytes, mime_type=mime_type), prompt],
-                    generation_config=gen_config,
-                )
+                if types and hasattr(types, "Part") and hasattr(getattr(types, "Part"), "from_bytes"):
+                    response = model.generate_content(
+                        [types.Part.from_bytes(data=file_bytes, mime_type=mime_type), prompt],
+                        generation_config=gen_config,
+                    )
+                else:
+                    # use genai.upload_file(path) helper which older package provides
+                    try:
+                        upload_ref = genai.upload_file(abs_path)
+                        response = model.generate_content([upload_ref, prompt], generation_config=gen_config)
+                    except Exception:
+                        raise
 
             print(f"[Gemini] Used model: {model_name}")
             break
