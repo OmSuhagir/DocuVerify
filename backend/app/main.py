@@ -9,7 +9,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="DocuVerify API", version="1.0.0")
 
 # Configure allowed origins from environment. Use comma-separated list or "*" for all.
-allowed_origins = os.getenv("FASTAPI_ALLOWED_ORIGINS", "http://localhost:5173")
+allowed_origins = os.getenv("FASTAPI_ALLOWED_ORIGINS", "http://localhost:5173", "*")
 if allowed_origins.strip() == "*":
     origins = ["*"]
 else:
