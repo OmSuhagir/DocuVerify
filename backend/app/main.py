@@ -56,7 +56,7 @@ app = FastAPI(title="DocuVerify API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://docuverify-backend-fqp3.onrender.com","http://localhost:5173", "*"],  # Your frontend URL
+    allow_origins=["https://docu-verify-seven.vercel.app","http://localhost:5173", "*"],  # Your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
